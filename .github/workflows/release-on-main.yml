@@ -37,7 +37,7 @@ jobs:
           cp app-desktop/build/distributions/app-desktop-*.zip release-artifacts/stella-incident-profiler-desktop.zip
           cp app-desktop/build/libs/app-desktop-*.jar release-artifacts/stella-incident-profiler-desktop.jar
           zip -qr release-artifacts/stella-incident-profiler-schemas.zip schemas
-          zip -qr release-artifacts/stella-incident-profiler-docs.zip docs README.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md LICENSE_DECISION.md
+          zip -qr release-artifacts/stella-incident-profiler-docs.zip docs README.md README_ja.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md LICENSE_DECISION.md
           zip -qr release-artifacts/stella-incident-profiler-mock-data.zip mock-data examples ui
           (
             cd release-artifacts

@@ -2,6 +2,10 @@ package com.stella.incidentprofiler.desktop;
 
 import com.stella.incidentprofiler.core.port.ProviderRegistry;
 import com.stella.incidentprofiler.core.model.Incident;
+import com.stella.incidentprofiler.core.model.AlbRouteAnalysis;
+import com.stella.incidentprofiler.core.model.AuroraMetricPoint;
+import com.stella.incidentprofiler.core.model.ExternalCallSummary;
+import com.stella.incidentprofiler.core.model.JfrHotspot;
 import com.stella.incidentprofiler.core.model.LogEvent;
 import com.stella.incidentprofiler.core.model.TimelinePoint;
 import com.stella.incidentprofiler.core.model.TraceSpan;
@@ -186,6 +190,34 @@ public final class StellaIncidentProfilerApp extends Application {
         return column;
     }
 
+    private TableColumn<JfrHotspot, String> jfrColumn(String labelKey, java.util.function.Function<JfrHotspot, String> valueFactory, double width) {
+        TableColumn<JfrHotspot, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
+    private TableColumn<AlbRouteAnalysis, String> albColumn(String labelKey, java.util.function.Function<AlbRouteAnalysis, String> valueFactory, double width) {
+        TableColumn<AlbRouteAnalysis, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
+    private TableColumn<AuroraMetricPoint, String> auroraColumn(String labelKey, java.util.function.Function<AuroraMetricPoint, String> valueFactory, double width) {
+        TableColumn<AuroraMetricPoint, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
+    private TableColumn<ExternalCallSummary, String> externalColumn(String labelKey, java.util.function.Function<ExternalCallSummary, String> valueFactory, double width) {
+        TableColumn<ExternalCallSummary, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
     private void renderIncidentDetail(VBox detailPane, Incident incident) {
         detailPane.getChildren().setAll(sectionTitle("incident.detail.title"));
         if (incident == null) {
@@ -235,6 +267,10 @@ public final class StellaIncidentProfilerApp extends Application {
         tabs.getTabs().add(new Tab(uiText.get("incident.detail.timeline"), createTimelineView(incident)));
         tabs.getTabs().add(new Tab(uiText.get("logs.title"), createLogView(incident)));
         tabs.getTabs().add(new Tab(uiText.get("trace.title"), createTraceView(incident)));
+        tabs.getTabs().add(new Tab(uiText.get("jfr.title"), createJfrView(incident)));
+        tabs.getTabs().add(new Tab(uiText.get("incident.detail.albAnalysis"), createAlbView(incident)));
+        tabs.getTabs().add(new Tab(uiText.get("incident.detail.auroraAnalysis"), createAuroraView(incident)));
+        tabs.getTabs().add(new Tab(uiText.get("incident.detail.externalApiAnalysis"), createExternalCallView(incident)));
         tabs.getTabs().forEach(tab -> tab.setClosable(false));
 
         VBox content = new VBox(12, sectionTitle("nav.profiler"), tabs);
@@ -258,6 +294,70 @@ public final class StellaIncidentProfilerApp extends Application {
         ));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
         VBox view = new VBox(8, sectionTitle("incident.detail.timeline"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
+    }
+
+    private VBox createJfrView(Incident incident) {
+        TableView<JfrHotspot> table = new TableView<>();
+        providers.jfr().getHotspots(incident.id(), null).hotspots().values().stream()
+            .flatMap(List::stream)
+            .forEach(table.getItems()::add);
+        table.getColumns().setAll(List.of(
+            jfrColumn("jfr.title", hotspot -> localizeJfrType(hotspot.type().name()), 120),
+            jfrColumn("incident.column.summary", JfrHotspot::method, 360),
+            jfrColumn("trace.duration", hotspot -> String.valueOf(hotspot.sampleCount()), 120),
+            jfrColumn("dashboard.errorRate", hotspot -> hotspot.percentage() + "%", 120)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("jfr.title"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
+    }
+
+    private VBox createAlbView(Incident incident) {
+        TableView<AlbRouteAnalysis> table = new TableView<>();
+        table.getItems().setAll(providers.analysis().compareAlbBeforeAfter(incident.id()).topRoutes());
+        table.getColumns().setAll(List.of(
+            albColumn("incident.column.summary", AlbRouteAnalysis::route, 220),
+            albColumn("dashboard.latency", route -> route.beforeP95Ms() + " ms", 140),
+            albColumn("timeline.overlay.latency", route -> route.duringP95Ms() + " ms", 140),
+            albColumn("timeline.overlay.errors", route -> String.valueOf(route.during5xx()), 120)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("incident.detail.albAnalysis"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
+    }
+
+    private VBox createAuroraView(Incident incident) {
+        TableView<AuroraMetricPoint> table = new TableView<>();
+        table.getItems().setAll(providers.analysis().getAuroraMetrics(incident.id()).metrics());
+        table.getColumns().setAll(List.of(
+            auroraColumn("incident.column.startTime", metric -> formatTime(metric.timestamp()), 180),
+            auroraColumn("settings.runtimeMode", metric -> String.valueOf(metric.databaseConnections()), 120),
+            auroraColumn("timeline.overlay.dbLatency", metric -> metric.readLatencyMs() + " ms", 140),
+            auroraColumn("timeline.overlay.latency", metric -> metric.writeLatencyMs() + " ms", 140),
+            auroraColumn("timeline.overlay.cpu", metric -> metric.cpuPercent() + "%", 100)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("incident.detail.auroraAnalysis"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
+    }
+
+    private VBox createExternalCallView(Incident incident) {
+        TableView<ExternalCallSummary> table = new TableView<>();
+        table.getItems().setAll(providers.analysis().compareExternalCallsBeforeAfter(incident.id()).dependencies());
+        table.getColumns().setAll(List.of(
+            externalColumn("incident.column.service", ExternalCallSummary::name, 180),
+            externalColumn("dashboard.latency", dependency -> dependency.baselineP95Ms() + " ms", 130),
+            externalColumn("timeline.overlay.externalLatency", dependency -> dependency.incidentP95Ms() + " ms", 150),
+            externalColumn("dashboard.errorRate", dependency -> dependency.incidentErrorRate() + "%", 130),
+            externalColumn("incident.column.status", dependency -> localizeChange(dependency.change()), 120)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("incident.detail.externalApiAnalysis"), table);
         VBox.setVgrow(table, Priority.ALWAYS);
         return view;
     }
@@ -369,6 +469,27 @@ public final class StellaIncidentProfilerApp extends Application {
             case "EXTERNAL_API_LATENCY_SPIKE" -> "外部APIレイテンシ急増";
             case "MANUAL" -> "手動";
             default -> trigger;
+        };
+    }
+
+    private String localizeJfrType(String type) {
+        return switch (type) {
+            case "CPU" -> uiText.get("jfr.cpu");
+            case "ALLOCATION" -> uiText.get("jfr.allocation");
+            case "GC" -> uiText.get("jfr.gc");
+            case "LOCK" -> uiText.get("jfr.lock");
+            case "THREAD" -> uiText.get("jfr.thread");
+            case "EXCEPTION" -> uiText.get("jfr.exception");
+            default -> type;
+        };
+    }
+
+    private String localizeChange(String change) {
+        return switch (change) {
+            case "REGRESSED" -> "悪化";
+            case "STABLE" -> "安定";
+            case "IMPROVED" -> "改善";
+            default -> change;
         };
     }
 

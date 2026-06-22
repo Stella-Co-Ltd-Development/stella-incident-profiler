@@ -1,6 +1,6 @@
 [versions]
 jackson = "2.22.0"
-javafx = "26"
+javafx = "21.0.8"
 junit = "6.1.0"
 openjfxPlugin = "0.1.0"
 

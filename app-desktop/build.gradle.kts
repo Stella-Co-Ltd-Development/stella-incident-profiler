@@ -7,6 +7,7 @@ dependencies {
     implementation(project(":app-core"))
     implementation(project(":app-mock"))
     implementation(project(":app-mcp"))
+    implementation(libs.jackson.databind)
 }
 
 javafx {
@@ -16,4 +17,13 @@ javafx {
 
 application {
     mainClass.set("com.stella.incidentprofiler.desktop.StellaIncidentProfilerApp")
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir(rootProject.projectDir)
+            include("ui/ja-JP.json")
+        }
+    }
 }

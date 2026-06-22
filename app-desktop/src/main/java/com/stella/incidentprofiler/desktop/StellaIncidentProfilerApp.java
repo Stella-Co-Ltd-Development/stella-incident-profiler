@@ -2,7 +2,12 @@ package com.stella.incidentprofiler.desktop;
 
 import com.stella.incidentprofiler.core.port.ProviderRegistry;
 import com.stella.incidentprofiler.core.model.Incident;
+import com.stella.incidentprofiler.core.model.LogEvent;
+import com.stella.incidentprofiler.core.model.TimelinePoint;
+import com.stella.incidentprofiler.core.model.TraceSpan;
 import com.stella.incidentprofiler.core.port.IncidentQuery;
+import com.stella.incidentprofiler.core.port.LogQuery;
+import com.stella.incidentprofiler.core.port.TraceQuery;
 import com.stella.incidentprofiler.core.runtime.RuntimeMode;
 import com.stella.incidentprofiler.core.runtime.RuntimeSettings;
 import com.stella.incidentprofiler.mock.MockProviderFactory;
@@ -20,6 +25,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -85,10 +92,11 @@ public final class StellaIncidentProfilerApp extends Application {
         Button dashboard = navigationButton("nav.dashboard", this::showDashboard);
         Button serviceMap = navigationButton("nav.serviceMap", () -> showSimpleScreen("nav.serviceMap"));
         Button incidents = navigationButton("nav.incidents", this::showIncidents);
+        Button profiler = navigationButton("nav.profiler", this::showProfiler);
         Button mcpConsole = navigationButton("nav.mcpConsole", () -> showSimpleScreen("mcp.title"));
         Button settings = navigationButton("nav.settings", () -> showSimpleScreen("settings.title"));
 
-        VBox navigation = new VBox(8, dashboard, serviceMap, incidents, mcpConsole, settings);
+        VBox navigation = new VBox(8, dashboard, serviceMap, incidents, profiler, mcpConsole, settings);
         navigation.setPadding(new Insets(12));
         navigation.setPrefWidth(220);
         navigation.setStyle("-fx-border-color: #d8dee9; -fx-border-width: 0 1 0 0; -fx-background-color: #f7f9fb;");
@@ -157,6 +165,27 @@ public final class StellaIncidentProfilerApp extends Application {
         return column;
     }
 
+    private TableColumn<TimelinePoint, String> timelineColumn(String labelKey, java.util.function.Function<TimelinePoint, String> valueFactory, double width) {
+        TableColumn<TimelinePoint, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
+    private TableColumn<LogEvent, String> logColumn(String labelKey, java.util.function.Function<LogEvent, String> valueFactory, double width) {
+        TableColumn<LogEvent, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
+    private TableColumn<TraceSpan, String> traceColumn(String labelKey, java.util.function.Function<TraceSpan, String> valueFactory, double width) {
+        TableColumn<TraceSpan, String> column = new TableColumn<>(uiText.get(labelKey));
+        column.setCellValueFactory(cell -> new ReadOnlyStringWrapper(valueFactory.apply(cell.getValue())));
+        column.setPrefWidth(width);
+        return column;
+    }
+
     private void renderIncidentDetail(VBox detailPane, Incident incident) {
         detailPane.getChildren().setAll(sectionTitle("incident.detail.title"));
         if (incident == null) {
@@ -198,6 +227,74 @@ public final class StellaIncidentProfilerApp extends Application {
         labelNode.setStyle("-fx-font-weight: bold;");
         gridPane.add(labelNode, 0, row);
         gridPane.add(new Label(value), 1, row);
+    }
+
+    private void showProfiler() {
+        Incident incident = providers.incidents().listIncidents(IncidentQuery.all()).getFirst();
+        TabPane tabs = new TabPane();
+        tabs.getTabs().add(new Tab(uiText.get("incident.detail.timeline"), createTimelineView(incident)));
+        tabs.getTabs().add(new Tab(uiText.get("logs.title"), createLogView(incident)));
+        tabs.getTabs().add(new Tab(uiText.get("trace.title"), createTraceView(incident)));
+        tabs.getTabs().forEach(tab -> tab.setClosable(false));
+
+        VBox content = new VBox(12, sectionTitle("nav.profiler"), tabs);
+        content.setPadding(new Insets(20));
+        VBox.setVgrow(tabs, Priority.ALWAYS);
+        root.setCenter(content);
+    }
+
+    private VBox createTimelineView(Incident incident) {
+        TableView<TimelinePoint> table = new TableView<>();
+        table.getItems().setAll(providers.timelines().getTimeline(incident.id(), incident.evidenceWindow().from(), incident.evidenceWindow().to()).points());
+        table.getColumns().setAll(List.of(
+            timelineColumn("incident.column.startTime", point -> formatTime(point.timestamp()), 180),
+            timelineColumn("timeline.overlay.latency", point -> point.latencyP95Ms() + " ms", 120),
+            timelineColumn("timeline.overlay.errors", point -> String.valueOf(point.errorCount()), 90),
+            timelineColumn("timeline.overlay.cpu", point -> point.cpuPercent() + "%", 90),
+            timelineColumn("timeline.overlay.heap", point -> point.heapPercent() + "%", 90),
+            timelineColumn("timeline.overlay.gc", point -> point.gcPauseMs() + " ms", 110),
+            timelineColumn("timeline.overlay.dbLatency", point -> point.dbLatencyMs() + " ms", 120),
+            timelineColumn("timeline.overlay.externalLatency", point -> point.externalApiLatencyMs() + " ms", 150)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("incident.detail.timeline"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
+    }
+
+    private VBox createLogView(Incident incident) {
+        TableView<LogEvent> table = new TableView<>();
+        table.getItems().setAll(providers.logs().searchLogs(new LogQuery(incident.service(), null, null, null, incident.evidenceWindow().from(), incident.evidenceWindow().to(), 100)).items());
+        table.getColumns().setAll(List.of(
+            logColumn("incident.column.startTime", log -> formatTime(log.timestamp()), 180),
+            logColumn("logs.level", log -> log.level().name(), 90),
+            logColumn("incident.column.service", LogEvent::service, 130),
+            logColumn("logs.traceId", log -> log.traceId() == null ? "" : log.traceId(), 140),
+            logColumn("incident.column.summary", LogEvent::message, 420)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("logs.title"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
+    }
+
+    private VBox createTraceView(Incident incident) {
+        TableView<TraceSpan> table = new TableView<>();
+        providers.traces().findSlowTraces(new TraceQuery(incident.service(), incident.evidenceWindow().from(), incident.evidenceWindow().to(), 1)).stream()
+            .findFirst()
+            .map(summary -> providers.traces().getTrace(summary.traceId()))
+            .ifPresent(trace -> table.getItems().setAll(trace.spans()));
+        table.getColumns().setAll(List.of(
+            traceColumn("logs.traceId", TraceSpan::traceId, 140),
+            traceColumn("incident.column.service", TraceSpan::service, 130),
+            traceColumn("incident.column.summary", TraceSpan::operation, 280),
+            traceColumn("trace.duration", span -> span.durationMs() + " ms", 120),
+            traceColumn("trace.status", TraceSpan::status, 100)
+        ));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
+        VBox view = new VBox(8, sectionTitle("trace.title"), table);
+        VBox.setVgrow(table, Priority.ALWAYS);
+        return view;
     }
 
     private void showSimpleScreen(String titleKey) {

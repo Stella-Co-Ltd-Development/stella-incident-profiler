@@ -37,34 +37,35 @@ It is not intended to be a write-capable production control plane by default. Re
 
 ## Current Repository State
 
-The `main` branch contains the public specification package, schemas, sanitized mock data, diagrams, examples, UI text resources, and OSS governance documents.
+The `main` branch now contains the initial runnable OSS implementation, not only the original specification package. It includes the Gradle multi-module project, JavaFX desktop shell, mock providers, domain/provider API contracts, mock-backed investigation views, read-only MCP tool skeleton, CI, and release artifact workflow.
 
-Implementation is being developed in small open pull requests. The active stack introduces:
+Current implemented scope:
 
 - Gradle multi-module Java 21 project structure
-- JavaFX desktop shell
-- domain models and provider ports
-- mock data providers
-- mock-backed incident list/detail views
-- timeline, log, trace, JFR, ALB, Aurora, and external API panels
-- read-only MCP tool skeleton
-- CI and release workflows
-
-The implementation PRs are intentionally left open for review unless they are core infrastructure PRs approved for merge.
+- JavaFX desktop shell that starts in mock/debug mode
+- Japanese UI resource loading from `ui/ja-JP.json`
+- visible mock-mode indicator: `モックデータ表示中`
+- provider interfaces in `app-core`
+- mock providers in `app-mock` backed by `mock-data/*`
+- dashboard, incident list, incident detail, timeline, log, trace, JFR, ALB, Aurora, external API, settings, and MCP console surfaces
+- read-only MCP tool definitions, DTOs, and provider-backed skeleton executor
+- unit tests for domain JSON mapping, mock provider loading, UI resource key coverage, and MCP tool contracts
+- pull request CI with Java 21 and Gradle
+- release-on-main workflow that builds portable artifacts, bundles docs/schemas/mock data, writes checksums, and publishes a GitHub Release
 
 ## Architecture
 
-The planned Gradle modules are:
+The current Gradle modules are:
 
 | Module | Responsibility |
 |---|---|
 | `app-desktop` | JavaFX desktop application and Japanese UI |
-| `app-core` | domain model, use cases, provider interfaces, runtime settings |
+| `app-core` | domain model, provider interfaces, runtime settings, JSON support |
 | `app-mock` | debug-mode providers backed by `mock-data/*` |
-| `app-aws` | future AWS adapters behind provider interfaces |
-| `app-jfr` | future JFR parsing and profiler control interfaces |
-| `app-mcp` | local MCP tool definitions, DTOs, and future server transport |
-| `app-storage` | local settings, audit log, and incident index abstractions |
+| `app-aws` | placeholder module for future AWS adapters behind provider interfaces |
+| `app-jfr` | placeholder module for future JFR parsing and profiler control interfaces |
+| `app-mcp` | read-only MCP tool definitions, DTOs, and provider-backed executor skeleton |
+| `app-storage` | placeholder module for local settings, audit log, and incident index abstractions |
 | `app-test-support` | shared test fixtures |
 
 The key design boundary is the provider registry. GUI, MCP, storage, AWS, and JFR code meet through ports instead of direct dependencies.
@@ -116,9 +117,161 @@ providers = settings.mode() == RuntimeMode.DEBUG
 
 Live AWS providers will replace the mock factory behind the same ports. The UI should not need to know which provider implementation is active.
 
-## MCP Direction
+## Provider API
 
-MCP support is intended to make incident evidence available to AI assistants in a controlled, read-only form. The local MCP server should run inside the desktop app or alongside it as a local child process. The first implementation slice defines tool contracts and provider-backed execution before adding transport/server SDK details.
+The current application API is the Java provider-port layer under `app-core/src/main/java/com/stella/incidentprofiler/core/port`. These interfaces are the stable boundary between JavaFX, MCP, mock data, and future live integrations.
+
+### Provider Registry
+
+```java
+public record ProviderRegistry(
+    RuntimeMode mode,
+    IncidentProvider incidents,
+    TimelineProvider timelines,
+    LogProvider logs,
+    TraceProvider traces,
+    JfrProvider jfr,
+    AwsTopologyProvider topology,
+    AnalysisProvider analysis
+) {
+}
+```
+
+### Incident API
+
+```java
+public interface IncidentProvider {
+    List<Incident> listIncidents(IncidentQuery query);
+
+    Incident getIncident(String incidentId);
+}
+
+public record IncidentQuery(String service, String environment, Instant from, Instant to) {
+    public static IncidentQuery all() {
+        return new IncidentQuery(null, null, null, null);
+    }
+}
+```
+
+### Timeline API
+
+```java
+public interface TimelineProvider {
+    TimelineWindow getTimeline(String incidentId, Instant from, Instant to);
+}
+```
+
+`TimelineWindow` contains the incident ID, resolution, and timeline points for latency, errors, CPU, heap, GC pause, blocked threads, DB latency, external API latency, and ALB target response time.
+
+### Log API
+
+```java
+public interface LogProvider {
+    Page<LogEvent> searchLogs(LogQuery query);
+}
+
+public record LogQuery(
+    String service,
+    LogLevel level,
+    String query,
+    String traceId,
+    Instant from,
+    Instant to,
+    int limit
+) {
+}
+
+public record Page<T>(List<T> items, String nextPageToken) {
+}
+```
+
+The current mock implementation returns redacted synthetic log events from `mock-data/logs.ndjson`.
+
+### Trace API
+
+```java
+public interface TraceProvider {
+    TraceDetail getTrace(String traceId);
+
+    List<TraceSummary> findSlowTraces(TraceQuery query);
+}
+
+public record TraceQuery(String service, Instant from, Instant to, int limit) {
+}
+```
+
+### JFR API
+
+```java
+public interface JfrProvider {
+    JfrHotspotSummary getHotspots(String incidentId, JfrHotspotType type);
+}
+```
+
+The current mock JFR provider loads normalized hotspot summaries. It does not parse raw `.jfr` files yet.
+
+### AWS Topology And Analysis APIs
+
+```java
+public interface AwsTopologyProvider {
+    AwsTopologySnapshot getTopology(String environmentId);
+}
+
+public interface AnalysisProvider {
+    AlbAnalysis compareAlbBeforeAfter(String incidentId);
+
+    AuroraMetrics getAuroraMetrics(String incidentId);
+
+    ExternalCallAnalysis compareExternalCallsBeforeAfter(String incidentId);
+}
+```
+
+These APIs currently return mock topology, ALB, Aurora, and external dependency evidence. Future live adapters should implement the same ports.
+
+## Draft REST API Direction
+
+There is no running REST control plane in the current implementation. The draft control-plane API remains a design target for future remote or team-mode integrations:
+
+```http
+GET /v1/incidents?service=checkout-api&from=2026-06-23T00:00:00Z&to=2026-06-23T23:59:59Z
+GET /v1/incidents/{incidentId}
+GET /v1/incidents/{incidentId}/timeline?from=...&to=...
+POST /v1/logs/search
+GET /v1/traces/{traceId}
+GET /v1/incidents/{incidentId}/jfr/hotspots?type=cpu
+POST /v1/incidents/{incidentId}/report
+```
+
+REST responses should follow the same domain DTOs and redaction rules as the provider and MCP layers. Any endpoint returning large data must support `limit`, `nextToken`, and deterministic ordering.
+
+## MCP Specification
+
+MCP support makes incident evidence available to AI assistants in a controlled, read-only form. The current implementation includes tool definitions, request/response DTOs, a provider-backed executor skeleton, and an MCP console listing inside the JavaFX shell. It does not yet include MCP Java SDK transport/server integration.
+
+### MCP DTOs
+
+```java
+public record McpToolDefinition(
+    String name,
+    String description,
+    boolean readOnly,
+    Map<String, String> inputFields
+) {
+}
+
+public record McpToolRequest(String toolName, Map<String, Object> arguments) {
+}
+
+public record McpToolResponse(
+    String toolName,
+    Object result,
+    boolean readOnly,
+    boolean redacted
+) {
+}
+```
+
+### Implemented Read-Only Tool Registry
 
 The read-only tool registry is shaped like this:
 
@@ -147,6 +300,33 @@ The MCP philosophy is strict:
 - payload bodies are excluded unless a future explicit policy enables them
 - local MCP executions should be auditable
 - write operations require a separate policy and explicit user confirmation
+
+### Current MCP Executor Behavior
+
+`McpIncidentToolExecutor` dispatches requests by `toolName`:
+
+| Tool | Current behavior |
+|---|---|
+| `list_services` | Lists unique services from incidents |
+| `list_incidents` | Returns all mock incidents |
+| `get_incident_summary` | Returns one `Incident` by `incidentId` |
+| `get_incident_timeline` | Returns the incident timeline for the incident evidence window |
+| `search_logs` | Searches logs by optional `service`, `query`, and `limit` |
+| `get_trace` | Returns one trace by `traceId` |
+| `get_jfr_hotspots` | Returns JFR hotspots for an incident |
+| `compare_alb_before_after` | Returns ALB before/during comparison |
+| `compare_external_calls_before_after` | Returns external dependency comparison |
+| `generate_incident_report` | Returns a Markdown report string from mock evidence |
+
+All current responses are marked `readOnly=true` and `redacted=true`.
+
+Current MCP limitations:
+
+- no MCP Java SDK transport/server has been wired yet
+- no MCP resources or prompt templates are registered yet
+- no local MCP audit log is persisted yet
+- `get_aurora_metrics` is still a planned MCP tool even though Aurora data is available through `AnalysisProvider` and the JavaFX panel
+- request validation is intentionally minimal in the skeleton executor
 
 ## Debug Mode
 
@@ -179,7 +359,7 @@ The UI must show:
 
 The desktop UI is JavaFX/OpenJFX. Visible UI labels, menus, tooltips, errors, and report titles are Japanese. Developer-facing code, comments, logs, identifiers, documentation, commit messages, PRs, and issues are English.
 
-Primary planned screens:
+Current mock-backed screens and surfaces:
 
 - `ダッシュボード`
 - `サービス構成`
@@ -193,6 +373,41 @@ Primary planned screens:
 - `設定`
 
 UI text is sourced from `ui/ja-JP.json`.
+
+The current UI is intentionally simple and table-driven. It is suitable for validating data flow, provider wiring, and Japanese labels, but not yet a polished production investigation console. Charting, timeline zoom/pan, UI snapshot tests, and richer filters remain future work.
+
+## Build, Test, And Release
+
+Local build:
+
+```sh
+./gradlew build
+```
+
+Run the desktop app in mock mode on a machine with a graphical desktop:
+
+```sh
+./gradlew :app-desktop:run --args='--mock'
+```
+
+Pull request CI:
+
+- checks out the repository
+- installs Temurin Java 21
+- configures Gradle caching
+- runs `./gradlew build --no-daemon`
+
+Release-on-main workflow:
+
+- runs on pushes to `main`
+- runs `./gradlew build --no-daemon`
+- creates a portable desktop distribution zip
+- creates a desktop application jar
+- bundles schemas, documentation, mock data, examples, and UI resources
+- writes SHA-256 checksums
+- publishes a GitHub Release for the main branch build
+
+Native installers are not produced yet.
 
 ## Repository Contents
 
@@ -222,19 +437,17 @@ Start with:
 
 ## Development Workflow
 
-The project is intentionally built through small PRs:
+The project should continue to use small, reviewable PRs. Current next likely implementation areas are:
 
-1. Bootstrap the Gradle project.
-2. Add CI.
-3. Add release artifacts for `main`.
-4. Add domain models and provider ports.
-5. Add mock providers.
-6. Add JavaFX shell.
-7. Add mock-backed investigation views.
-8. Add MCP tool contracts.
-9. Add live adapters only after the mock and interface design is stable.
-
-Core infrastructure PRs may be merged after review and passing CI. Implementation PRs that include application logic, GUI behavior, MCP behavior, profiler logic, AWS integration, or data-processing logic should remain open for maintainer review.
+- MCP Java SDK transport/server integration
+- local MCP audit logging
+- richer MCP resources and prompt templates
+- live AWS adapters behind the existing provider ports
+- JFR parser support for raw or normalized JFR artifacts
+- local storage for settings, incident index, and MCP audit events
+- UI snapshot tests and richer JavaFX interaction tests
+- timeline zoom/pan and linked filtering across logs, traces, and hotspots
+- native packaging through jlink/jpackage
 
 ## Security And Privacy
 

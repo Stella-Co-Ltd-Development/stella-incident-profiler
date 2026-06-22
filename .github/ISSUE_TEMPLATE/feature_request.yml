@@ -1,0 +1,47 @@
+name: Feature request
+description: Propose an OSS-friendly feature or improvement.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or contributor problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the desired behavior.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - JavaFX desktop UI
+        - Debug/mock mode
+        - MCP tools
+        - AWS integration
+        - JFR/profiler
+        - Storage
+        - Documentation
+        - CI/release
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security And Privacy Considerations
+      description: Note any credential, log, payload, AWS, MCP, or data-retention impact.
+  - type: checkboxes
+    id: language
+    attributes:
+      label: Language Policy
+      options:
+        - label: I understand that visible application UI text must be Japanese and developer-facing text must be English.
+          required: true

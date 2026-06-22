@@ -44,11 +44,17 @@ The GUI must render from synthetic mock data through dependency-injected provide
 Each PR should include:
 
 - summary
+- scope
+- what changed
+- what was intentionally not changed
 - linked issue or motivation
 - screenshots for UI changes when practical
 - tests added or updated
 - manual verification steps
 - security/privacy notes when relevant
+- follow-up PRs when work is intentionally split
+
+Implementation PRs that contain application logic, GUI behavior, MCP tool behavior, profiler logic, AWS integration, or data-processing logic should remain open for maintainer review. Core infrastructure PRs may be merged after review and passing CI.
 
 ## Tests
 
@@ -79,6 +85,8 @@ Do not commit:
 ## Dependency policy
 
 Before adding a dependency, consider license compatibility, security impact, packaging impact, and whether the dependency is required in the desktop app, the control plane, the agent, or tests only.
+
+Check `docs/20_open_source_governance.md` and document the dependency license in the PR description before adding it.
 
 ## DCO / CLA status
 

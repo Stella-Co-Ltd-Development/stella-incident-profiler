@@ -14,6 +14,8 @@ import com.stella.incidentprofiler.core.port.LogQuery;
 import com.stella.incidentprofiler.core.port.TraceQuery;
 import com.stella.incidentprofiler.core.runtime.RuntimeMode;
 import com.stella.incidentprofiler.core.runtime.RuntimeSettings;
+import com.stella.incidentprofiler.mcp.McpToolDefinition;
+import com.stella.incidentprofiler.mcp.McpToolRegistry;
 import com.stella.incidentprofiler.mock.MockProviderFactory;
 import java.nio.file.Path;
 import java.time.ZoneId;
@@ -97,7 +99,7 @@ public final class StellaIncidentProfilerApp extends Application {
         Button serviceMap = navigationButton("nav.serviceMap", () -> showSimpleScreen("nav.serviceMap"));
         Button incidents = navigationButton("nav.incidents", this::showIncidents);
         Button profiler = navigationButton("nav.profiler", this::showProfiler);
-        Button mcpConsole = navigationButton("nav.mcpConsole", () -> showSimpleScreen("mcp.title"));
+        Button mcpConsole = navigationButton("nav.mcpConsole", this::showMcpConsole);
         Button settings = navigationButton("nav.settings", () -> showSimpleScreen("settings.title"));
 
         VBox navigation = new VBox(8, dashboard, serviceMap, incidents, profiler, mcpConsole, settings);
@@ -407,6 +409,23 @@ public final class StellaIncidentProfilerApp extends Application {
         list.getItems().add(uiText.get("action.refresh"));
         list.setPrefHeight(220);
         content.getChildren().add(list);
+
+        root.setCenter(new ScrollPane(content));
+    }
+
+    private void showMcpConsole() {
+        VBox content = new VBox(16);
+        content.setPadding(new Insets(20));
+        content.getChildren().add(sectionTitle("mcp.title"));
+        content.getChildren().add(new Label(uiText.get("mcp.tools")));
+
+        ListView<String> tools = new ListView<>();
+        tools.getItems().setAll(McpToolRegistry.readOnlyTools().stream()
+            .map(McpToolDefinition::name)
+            .toList());
+        tools.setPrefHeight(320);
+        content.getChildren().add(tools);
+        content.getChildren().add(metricRow(uiText.get("mcp.response"), uiText.get("status.mockMode")));
 
         root.setCenter(new ScrollPane(content));
     }

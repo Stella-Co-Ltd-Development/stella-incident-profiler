@@ -1,0 +1,21 @@
+flowchart TB
+  View[JavaFX Views]
+  VM[ViewModels]
+  App[Application Services]
+  Ports[Domain Provider Ports]
+  Mock[Mock Providers]
+  AWS[AWS Providers]
+  JFR[JFR Provider]
+  MCP[Local MCP Server]
+  DB[(SQLite / DuckDB)]
+  Files[Mock Data and Artifacts]
+
+  View --> VM --> App --> Ports
+  Ports --> Mock
+  Ports --> AWS
+  Ports --> JFR
+  MCP --> App
+  Mock --> Files
+  AWS --> DB
+  JFR --> Files
+  App --> DB

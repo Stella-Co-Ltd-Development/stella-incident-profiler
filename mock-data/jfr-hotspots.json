@@ -1,0 +1,53 @@
+{
+  "incidentId": "inc-20260623-001",
+  "hotspots": {
+    "CPU": [
+      {
+        "incidentId": "inc-20260623-001",
+        "type": "CPU",
+        "method": "com.example.payment.PaymentRetryPolicy.evaluate",
+        "sampleCount": 1240,
+        "percentage": 31.2,
+        "thread": "http-nio-8080-exec-*"
+      },
+      {
+        "incidentId": "inc-20260623-001",
+        "type": "CPU",
+        "method": "com.example.order.OrderService.createOrder",
+        "sampleCount": 880,
+        "percentage": 22.1,
+        "thread": "http-nio-8080-exec-*"
+      }
+    ],
+    "ALLOCATION": [
+      {
+        "incidentId": "inc-20260623-001",
+        "type": "ALLOCATION",
+        "method": "com.example.payment.PaymentResponseMapper.map",
+        "sampleCount": 650,
+        "percentage": 18.4,
+        "thread": "http-nio-8080-exec-*"
+      }
+    ],
+    "GC": [
+      {
+        "incidentId": "inc-20260623-001",
+        "type": "GC",
+        "method": "G1 Young Generation",
+        "sampleCount": 3,
+        "percentage": 100.0,
+        "thread": "VM Thread"
+      }
+    ],
+    "LOCK": [
+      {
+        "incidentId": "inc-20260623-001",
+        "type": "LOCK",
+        "method": "com.example.cache.TokenCache.get",
+        "sampleCount": 120,
+        "percentage": 6.0,
+        "thread": "http-nio-8080-exec-*"
+      }
+    ]
+  }
+}

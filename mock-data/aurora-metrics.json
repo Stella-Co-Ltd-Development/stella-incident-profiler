@@ -1,0 +1,27 @@
+{
+  "incidentId": "inc-20260623-001",
+  "cluster": "retail-prod-aurora",
+  "metrics": [
+    {
+      "timestamp": "2026-06-23T12:05:00Z",
+      "databaseConnections": 84,
+      "readLatencyMs": 12.5,
+      "writeLatencyMs": 18.2,
+      "cpuPercent": 48.0
+    },
+    {
+      "timestamp": "2026-06-23T12:07:00Z",
+      "databaseConnections": 92,
+      "readLatencyMs": 15.1,
+      "writeLatencyMs": 23.0,
+      "cpuPercent": 55.0
+    },
+    {
+      "timestamp": "2026-06-23T12:09:00Z",
+      "databaseConnections": 88,
+      "readLatencyMs": 13.0,
+      "writeLatencyMs": 20.4,
+      "cpuPercent": 51.0
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "incidentId": "inc-20260623-001",
+  "dependencies": [
+    {
+      "name": "payment-provider",
+      "baselineP95Ms": 210,
+      "incidentP95Ms": 1600,
+      "baselineErrorRate": 0.2,
+      "incidentErrorRate": 7.8,
+      "change": "REGRESSED"
+    },
+    {
+      "name": "fraud-api",
+      "baselineP95Ms": 180,
+      "incidentP95Ms": 220,
+      "baselineErrorRate": 0.1,
+      "incidentErrorRate": 0.1,
+      "change": "STABLE"
+    }
+  ]
+}

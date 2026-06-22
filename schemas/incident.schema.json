@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/incident.schema.json",
+  "title": "Incident",
+  "type": "object",
+  "required": [
+    "id",
+    "service",
+    "environment",
+    "severity",
+    "status",
+    "triggerType",
+    "startTime",
+    "peakTime",
+    "summary",
+    "evidenceWindow"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "service": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DETECTED",
+        "COLLECTING_EVIDENCE",
+        "READY_FOR_ANALYSIS",
+        "ACKNOWLEDGED",
+        "MITIGATED",
+        "RESOLVED",
+        "ARCHIVED"
+      ]
+    },
+    "triggerType": {
+      "type": "string"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "peakTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "endTime": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "evidenceWindow": {
+      "type": "object",
+      "required": [
+        "from",
+        "to"
+      ],
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

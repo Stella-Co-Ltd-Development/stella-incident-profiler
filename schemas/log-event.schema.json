@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/log-event.schema.json",
+  "title": "LogEvent",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "service",
+    "level",
+    "message"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "service": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "TRACE",
+        "DEBUG",
+        "INFO",
+        "WARN",
+        "ERROR"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "traceId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "spanId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "thread": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "logger": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "exceptionClass": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "redacted": {
+      "type": "boolean"
+    }
+  }
+}

@@ -1,0 +1,101 @@
+{
+  "traces": [
+    {
+      "traceId": "trace-004",
+      "service": "checkout-api",
+      "operation": "POST /api/orders",
+      "startTime": "2026-06-23T12:07:08Z",
+      "durationMs": 2110,
+      "status": "ERROR",
+      "spanCount": 6,
+      "errorCount": 1,
+      "spans": [
+        {
+          "traceId": "trace-004",
+          "spanId": "span-001",
+          "parentSpanId": null,
+          "service": "checkout-api",
+          "operation": "POST /api/orders",
+          "kind": "SERVER",
+          "startTime": "2026-06-23T12:07:08Z",
+          "durationMs": 2110,
+          "status": "ERROR",
+          "attributes": {
+            "http.route": "/api/orders",
+            "http.status_code": "504"
+          }
+        },
+        {
+          "traceId": "trace-004",
+          "spanId": "span-002",
+          "parentSpanId": "span-001",
+          "service": "checkout-api",
+          "operation": "OrderService.createOrder",
+          "kind": "INTERNAL",
+          "startTime": "2026-06-23T12:07:08.050Z",
+          "durationMs": 2050,
+          "status": "ERROR",
+          "attributes": {}
+        },
+        {
+          "traceId": "trace-004",
+          "spanId": "span-003",
+          "parentSpanId": "span-002",
+          "service": "checkout-api",
+          "operation": "SELECT inventory",
+          "kind": "CLIENT",
+          "startTime": "2026-06-23T12:07:08.100Z",
+          "durationMs": 120,
+          "status": "OK",
+          "attributes": {
+            "db.system": "postgresql",
+            "peer.service": "aurora"
+          }
+        },
+        {
+          "traceId": "trace-004",
+          "spanId": "span-004",
+          "parentSpanId": "span-002",
+          "service": "checkout-api",
+          "operation": "POST payment-provider /charges",
+          "kind": "CLIENT",
+          "startTime": "2026-06-23T12:07:08.250Z",
+          "durationMs": 1500,
+          "status": "ERROR",
+          "attributes": {
+            "http.method": "POST",
+            "peer.service": "payment-provider",
+            "http.status_code": "504"
+          }
+        },
+        {
+          "traceId": "trace-004",
+          "spanId": "span-005",
+          "parentSpanId": "span-002",
+          "service": "checkout-api",
+          "operation": "INSERT order",
+          "kind": "CLIENT",
+          "startTime": "2026-06-23T12:07:09.780Z",
+          "durationMs": 90,
+          "status": "OK",
+          "attributes": {
+            "db.system": "postgresql",
+            "peer.service": "aurora"
+          }
+        },
+        {
+          "traceId": "trace-004",
+          "spanId": "span-006",
+          "parentSpanId": "span-002",
+          "service": "checkout-api",
+          "operation": "PaymentRetryPolicy.evaluate",
+          "kind": "INTERNAL",
+          "startTime": "2026-06-23T12:07:09.880Z",
+          "durationMs": 190,
+          "status": "OK",
+          "attributes": {}
+        }
+      ]
+    }
+  ]
+}

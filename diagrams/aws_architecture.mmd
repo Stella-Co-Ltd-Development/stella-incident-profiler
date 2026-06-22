@@ -1,0 +1,26 @@
+flowchart LR
+  User[User Browser]
+  R53[Route 53 + ACM]
+  CF[CloudFront + WAF]
+  S3[S3 Frontend Bucket]
+  ALB[Application Load Balancer]
+  ECS[ECS Java Backend Service]
+  Proxy[RDS Proxy]
+  Aurora[Aurora Cluster]
+  Logs[CloudWatch Logs]
+  Traces[X-Ray / OTLP Trace Backend]
+  Artifacts[S3 Evidence Artifacts]
+  GUI[JavaFX Desktop GUI]
+
+  User --> R53 --> CF
+  CF -->|static assets| S3
+  CF -->|/api/*| ALB --> ECS --> Proxy --> Aurora
+  ECS --> Logs
+  ECS --> Traces
+  ECS --> Artifacts
+  ALB --> Artifacts
+  CF --> Artifacts
+  GUI --> Logs
+  GUI --> Traces
+  GUI --> Artifacts
+  GUI --> Aurora

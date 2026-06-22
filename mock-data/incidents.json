@@ -1,0 +1,50 @@
+[
+  {
+    "id": "inc-20260623-001",
+    "service": "checkout-api",
+    "environment": "prod",
+    "severity": "HIGH",
+    "status": "READY_FOR_ANALYSIS",
+    "triggerType": "P95_LATENCY_SPIKE",
+    "startTime": "2026-06-23T12:03:00Z",
+    "peakTime": "2026-06-23T12:07:30Z",
+    "endTime": "2026-06-23T12:13:00Z",
+    "summary": "p95 latency increased while payment provider calls timed out.",
+    "evidenceWindow": {
+      "from": "2026-06-23T11:58:00Z",
+      "to": "2026-06-23T12:18:00Z"
+    }
+  },
+  {
+    "id": "inc-20260623-002",
+    "service": "catalog-api",
+    "environment": "prod",
+    "severity": "MEDIUM",
+    "status": "READY_FOR_ANALYSIS",
+    "triggerType": "AURORA_LATENCY_SPIKE",
+    "startTime": "2026-06-23T13:20:00Z",
+    "peakTime": "2026-06-23T13:24:30Z",
+    "endTime": "2026-06-23T13:31:00Z",
+    "summary": "Aurora read latency increased during a product search traffic burst.",
+    "evidenceWindow": {
+      "from": "2026-06-23T13:15:00Z",
+      "to": "2026-06-23T13:36:00Z"
+    }
+  },
+  {
+    "id": "inc-20260623-003",
+    "service": "orders-api",
+    "environment": "staging",
+    "severity": "HIGH",
+    "status": "DETECTED",
+    "triggerType": "GC_PAUSE_SPIKE",
+    "startTime": "2026-06-23T14:02:00Z",
+    "peakTime": "2026-06-23T14:05:00Z",
+    "endTime": null,
+    "summary": "Long GC pauses observed after a load test started.",
+    "evidenceWindow": {
+      "from": "2026-06-23T13:57:00Z",
+      "to": "2026-06-23T14:10:00Z"
+    }
+  }
+]

@@ -1,0 +1,275 @@
+{
+  "incidentId": "inc-20260623-001",
+  "resolution": "1m",
+  "points": [
+    {
+      "timestamp": "2026-06-23T11:58:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T11:59:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:00:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:01:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:02:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:03:00Z",
+      "latencyP95Ms": 640.0,
+      "errorCount": 3,
+      "cpuPercent": 49.6,
+      "heapPercent": 60.6,
+      "gcPauseMs": 119.0,
+      "blockedThreads": 4,
+      "dbLatencyMs": 69.0,
+      "externalApiLatencyMs": 480.0,
+      "albTargetResponseMs": 570.0
+    },
+    {
+      "timestamp": "2026-06-23T12:04:00Z",
+      "latencyP95Ms": 960.0,
+      "errorCount": 7,
+      "cpuPercent": 57.2,
+      "heapPercent": 64.2,
+      "gcPauseMs": 203.0,
+      "blockedThreads": 7,
+      "dbLatencyMs": 93.0,
+      "externalApiLatencyMs": 780.0,
+      "albTargetResponseMs": 860.0
+    },
+    {
+      "timestamp": "2026-06-23T12:05:00Z",
+      "latencyP95Ms": 1280.0,
+      "errorCount": 10,
+      "cpuPercent": 64.8,
+      "heapPercent": 67.8,
+      "gcPauseMs": 287.0,
+      "blockedThreads": 10,
+      "dbLatencyMs": 117.0,
+      "externalApiLatencyMs": 1080.0,
+      "albTargetResponseMs": 1150.0
+    },
+    {
+      "timestamp": "2026-06-23T12:06:00Z",
+      "latencyP95Ms": 1600.0,
+      "errorCount": 14,
+      "cpuPercent": 72.4,
+      "heapPercent": 71.4,
+      "gcPauseMs": 371.0,
+      "blockedThreads": 13,
+      "dbLatencyMs": 141.0,
+      "externalApiLatencyMs": 1380.0,
+      "albTargetResponseMs": 1440.0
+    },
+    {
+      "timestamp": "2026-06-23T12:07:00Z",
+      "latencyP95Ms": 1920.0,
+      "errorCount": 18,
+      "cpuPercent": 80.0,
+      "heapPercent": 75.0,
+      "gcPauseMs": 455.0,
+      "blockedThreads": 16,
+      "dbLatencyMs": 165.0,
+      "externalApiLatencyMs": 1680.0,
+      "albTargetResponseMs": 1730.0
+    },
+    {
+      "timestamp": "2026-06-23T12:08:00Z",
+      "latencyP95Ms": 1600.0,
+      "errorCount": 14,
+      "cpuPercent": 72.4,
+      "heapPercent": 71.4,
+      "gcPauseMs": 371.0,
+      "blockedThreads": 13,
+      "dbLatencyMs": 141.0,
+      "externalApiLatencyMs": 1380.0,
+      "albTargetResponseMs": 1440.0
+    },
+    {
+      "timestamp": "2026-06-23T12:09:00Z",
+      "latencyP95Ms": 1280.0,
+      "errorCount": 10,
+      "cpuPercent": 64.8,
+      "heapPercent": 67.8,
+      "gcPauseMs": 287.0,
+      "blockedThreads": 10,
+      "dbLatencyMs": 117.0,
+      "externalApiLatencyMs": 1080.0,
+      "albTargetResponseMs": 1150.0
+    },
+    {
+      "timestamp": "2026-06-23T12:10:00Z",
+      "latencyP95Ms": 960.0,
+      "errorCount": 7,
+      "cpuPercent": 57.2,
+      "heapPercent": 64.2,
+      "gcPauseMs": 203.0,
+      "blockedThreads": 7,
+      "dbLatencyMs": 93.0,
+      "externalApiLatencyMs": 780.0,
+      "albTargetResponseMs": 860.0
+    },
+    {
+      "timestamp": "2026-06-23T12:11:00Z",
+      "latencyP95Ms": 640.0,
+      "errorCount": 3,
+      "cpuPercent": 49.6,
+      "heapPercent": 60.6,
+      "gcPauseMs": 119.0,
+      "blockedThreads": 4,
+      "dbLatencyMs": 69.0,
+      "externalApiLatencyMs": 480.0,
+      "albTargetResponseMs": 570.0
+    },
+    {
+      "timestamp": "2026-06-23T12:12:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:13:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:14:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:15:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:16:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:17:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    },
+    {
+      "timestamp": "2026-06-23T12:18:00Z",
+      "latencyP95Ms": 320,
+      "errorCount": 0,
+      "cpuPercent": 42,
+      "heapPercent": 57,
+      "gcPauseMs": 35,
+      "blockedThreads": 2,
+      "dbLatencyMs": 45,
+      "externalApiLatencyMs": 180,
+      "albTargetResponseMs": 280
+    }
+  ],
+  "markers": [
+    {
+      "timestamp": "2026-06-23T12:04:10Z",
+      "type": "LOG_ERROR",
+      "label": "Payment timeout errors started"
+    },
+    {
+      "timestamp": "2026-06-23T12:07:30Z",
+      "type": "PEAK",
+      "label": "Latency peak"
+    },
+    {
+      "timestamp": "2026-06-23T12:08:00Z",
+      "type": "JFR_EVENT",
+      "label": "CPU hotspot in payment retry loop"
+    }
+  ]
+}

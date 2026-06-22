@@ -1,0 +1,20 @@
+sequenceDiagram
+  participant Detector as Incident Detector
+  participant Metrics as Metrics Provider
+  participant Logs as Log Provider
+  participant Traces as Trace Provider
+  participant JFR as JFR Provider
+  participant Store as Evidence Store
+  participant GUI as JavaFX GUI
+  participant MCP as MCP Server
+
+  Detector->>Metrics: Evaluate thresholds
+  Detector->>Store: Create incident
+  Detector->>Logs: Collect T-5m to T+5m logs
+  Detector->>Traces: Collect related traces
+  Detector->>JFR: Dump or index JFR snapshot
+  Logs->>Store: Store evidence references
+  Traces->>Store: Store evidence references
+  JFR->>Store: Store JFR artifact reference
+  GUI->>Store: Load incident detail
+  MCP->>Store: Query read-only evidence

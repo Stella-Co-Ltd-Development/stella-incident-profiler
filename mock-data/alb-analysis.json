@@ -1,0 +1,27 @@
+{
+  "incidentId": "inc-20260623-001",
+  "before": {
+    "requestCount": 4200,
+    "target5xx": 3,
+    "targetResponseP95Ms": 280
+  },
+  "during": {
+    "requestCount": 4450,
+    "target5xx": 128,
+    "targetResponseP95Ms": 1730
+  },
+  "topRoutes": [
+    {
+      "route": "/api/orders",
+      "beforeP95Ms": 310,
+      "duringP95Ms": 1840,
+      "during5xx": 112
+    },
+    {
+      "route": "/api/cart",
+      "beforeP95Ms": 190,
+      "duringP95Ms": 260,
+      "during5xx": 4
+    }
+  ]
+}

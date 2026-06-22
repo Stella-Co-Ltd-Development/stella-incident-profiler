@@ -1,0 +1,20 @@
+{
+  "environment": "prod",
+  "accountId": "123456789012",
+  "region": "ap-northeast-1",
+  "resources": {
+    "cloudFrontDistributionId": "E123MOCKDISTRIBUTION",
+    "frontendBucket": "mock-retail-frontend-prod",
+    "albArn": "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:loadbalancer/app/mock-retail-alb/123",
+    "ecsCluster": "retail-prod",
+    "ecsService": "checkout-api",
+    "rdsProxy": "retail-prod-proxy",
+    "auroraCluster": "retail-prod-aurora",
+    "logGroup": "/aws/ecs/checkout-api",
+    "artifactBucket": "mock-incident-artifacts-prod"
+  },
+  "warnings": [
+    "CloudFront standard logs are delayed and may not be real-time.",
+    "Payload capture is disabled by policy."
+  ]
+}

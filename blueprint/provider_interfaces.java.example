@@ -1,0 +1,33 @@
+package com.example.profiler.application.ports;
+
+import java.time.Instant;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
+
+public interface IncidentProvider {
+    List<IncidentSummary> listIncidents(IncidentQuery query);
+    IncidentDetail getIncident(String incidentId);
+}
+
+public interface TimelineProvider {
+    TimelineWindow getTimeline(String incidentId, Instant from, Instant to, TimelineResolution resolution);
+}
+
+public interface LogProvider {
+    Page<LogEvent> searchLogs(LogQuery query);
+}
+
+public interface TraceProvider {
+    List<TraceSummary> findSlowTraces(TraceQuery query);
+    TraceDetail getTrace(String traceId);
+}
+
+public interface JfrProvider {
+    JfrHotspotSummary getHotspots(String incidentId, JfrHotspotType type);
+    Optional<Path> downloadJfrArtifact(String incidentId);
+}
+
+public interface AwsTopologyProvider {
+    AwsTopologySnapshot getTopology(TopologyQuery query);
+}

@@ -1,0 +1,13 @@
+flowchart LR
+  AI[AI Client / IDE]
+  LocalMCP[Local MCP Server in Java App]
+  GUI[JavaFX Desktop]
+  Ports[Provider Ports]
+  Mock[Mock Providers]
+  Live[Live AWS Providers]
+
+  AI -->|MCP stdio or HTTP| LocalMCP
+  LocalMCP --> GUI
+  GUI --> Ports
+  Ports --> Mock
+  Ports --> Live

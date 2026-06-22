@@ -1,0 +1,64 @@
+{
+  "tools": [
+    {
+      "name": "list_services",
+      "mode": "read-only",
+      "description": "List known services."
+    },
+    {
+      "name": "list_incidents",
+      "mode": "read-only",
+      "description": "List incidents within a time range."
+    },
+    {
+      "name": "get_incident_summary",
+      "mode": "read-only",
+      "description": "Get incident summary and evidence references."
+    },
+    {
+      "name": "get_incident_timeline",
+      "mode": "read-only",
+      "description": "Get incident timeline points and markers."
+    },
+    {
+      "name": "search_logs",
+      "mode": "read-only",
+      "description": "Search redacted logs."
+    },
+    {
+      "name": "get_trace",
+      "mode": "read-only",
+      "description": "Get trace details."
+    },
+    {
+      "name": "find_slow_traces",
+      "mode": "read-only",
+      "description": "Find slow traces."
+    },
+    {
+      "name": "get_jfr_hotspots",
+      "mode": "read-only",
+      "description": "Get JFR hotspot summaries."
+    },
+    {
+      "name": "compare_alb_before_after",
+      "mode": "read-only",
+      "description": "Compare ALB behavior before and during an incident."
+    },
+    {
+      "name": "compare_external_calls_before_after",
+      "mode": "read-only",
+      "description": "Compare external dependency behavior."
+    },
+    {
+      "name": "get_aurora_metrics",
+      "mode": "read-only",
+      "description": "Get Aurora metrics."
+    },
+    {
+      "name": "generate_incident_report",
+      "mode": "read-only",
+      "description": "Generate a Markdown incident report."
+    }
+  ]
+}

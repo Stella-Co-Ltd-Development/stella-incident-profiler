@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/jfr-hotspot.schema.json",
+  "title": "JfrHotspot",
+  "type": "object",
+  "required": [
+    "incidentId",
+    "type",
+    "method",
+    "sampleCount",
+    "percentage"
+  ],
+  "properties": {
+    "incidentId": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "CPU",
+        "ALLOCATION",
+        "GC",
+        "LOCK",
+        "THREAD",
+        "EXCEPTION"
+      ]
+    },
+    "method": {
+      "type": "string"
+    },
+    "sampleCount": {
+      "type": "integer"
+    },
+    "percentage": {
+      "type": "number"
+    },
+    "thread": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

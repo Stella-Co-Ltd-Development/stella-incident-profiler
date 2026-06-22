@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/trace-summary.schema.json",
+  "title": "TraceSummary",
+  "type": "object",
+  "required": [
+    "traceId",
+    "service",
+    "operation",
+    "startTime",
+    "durationMs",
+    "status"
+  ],
+  "properties": {
+    "traceId": {
+      "type": "string"
+    },
+    "service": {
+      "type": "string"
+    },
+    "operation": {
+      "type": "string"
+    },
+    "startTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "durationMs": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string"
+    },
+    "spanCount": {
+      "type": "integer"
+    },
+    "errorCount": {
+      "type": "integer"
+    }
+  }
+}

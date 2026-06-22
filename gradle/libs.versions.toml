@@ -1,0 +1,15 @@
+[versions]
+jackson = "2.22.0"
+javafx = "26"
+junit = "6.1.0"
+openjfxPlugin = "0.1.0"
+
+[libraries]
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+[plugins]
+javafx = { id = "org.openjfx.javafxplugin", version.ref = "openjfxPlugin" }
